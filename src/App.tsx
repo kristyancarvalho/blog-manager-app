@@ -1,13 +1,18 @@
-import { Button } from "@/components/ui/button"
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/Home/index";
+import CreatePost from "./pages/CreatePost";
 
 function App() {
   return (
     <>
-      <div className="h-screen w-screen bg-red-600 text-center">
-        <h1 className="text-white font-bold">teste</h1>
-        <Button>receba</Button>
-      </div>
+      <Router>
+        <div className="min-h-screen bg-neutral-950">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/create-post" element={<CreatePost />} />
+          </Routes>
+        </div>
+      </Router>
     </>
   )
 }
