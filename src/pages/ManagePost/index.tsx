@@ -7,16 +7,20 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/Skeleton';
 
 function ManagePost() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [editingPost, setEditingPost] = useState<Post | null>(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchPosts = async () => {
+            setLoading(true);
             const fetchedPosts = await getPosts();
             setPosts(fetchedPosts);
+            setLoading(false);
         };
         fetchPosts();
     }, []);
@@ -28,11 +32,12 @@ function ManagePost() {
 
     const formatDate = (date: Date) => {
         return new Intl.DateTimeFormat('pt-BR', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
         }).format(date);
-      };
+    };
+
     const handleEdit = (post: Post) => {
         setEditingPost(post);
     };
@@ -43,6 +48,7 @@ function ManagePost() {
                 title: editingPost.title,
                 content: editingPost.content,
                 description: editingPost.description,
+                coverImage: editingPost.coverImage,
             });
             setEditingPost(null);
             const updatedPosts = await getPosts();
@@ -50,61 +56,72 @@ function ManagePost() {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (window.confirm('Tem certeza que deseja deletar este post?')) {
+    const handleDelete = async (id: string | undefined) => {
+        if (id && window.confirm('Tem certeza que deseja deletar este post?')) {
             await deletePost(id);
             const updatedPosts = await getPosts();
             setPosts(updatedPosts);
         }
     };
 
+    const PostSkeleton = () => (
+        <div className="bg-neutral-900 p-4 rounded-lg mb-4 flex">
+            <Skeleton className="w-32 h-32 mr-4" />
+            <div className="flex-grow">
+                <Skeleton className="w-3/4 h-6 mb-2" />
+                <Skeleton className="w-full h-4 mb-2" />
+                <Skeleton className="w-1/4 h-4 mb-2" />
+                <div className="flex justify-end space-x-2 mt-2">
+                    <Skeleton className="w-20 h-8" />
+                    <Skeleton className="w-20 h-8" />
+                </div>
+            </div>
+        </div>
+    );
+
     return (
         <>
             <NavigationBar />
-            <div className="absolute top-0 bottom-0 right-0 min-h-screen md:w-5/5 lg:w-4/5 flex items-center justify-center p-8">
+            <div className="absolute top-0 bottom-0 right-0 min-h-screen w-4/5 flex items-center justify-center p-8">
                 <main className="w-full h-full bg-black rounded-3xl shadow-black/60 shadow-900 shadow-2xl p-16 overflow-auto">
                     <code className="text-4xl text-neutral-200 text-extrabold mb-8 block">Gerenciar Posts</code>
-                    
                     <SearchBar 
-                      searchTerm={searchTerm} 
-                      setSearchTerm={setSearchTerm} 
-                      placeholder="Pesquisar posts para gerenciar..."
+                        searchTerm={searchTerm} 
+                        setSearchTerm={setSearchTerm} 
+                        placeholder="Pesquisar posts..."
                     />
-
-                    <div className="grid grid-cols-2 gap-6">
-                        {filteredPosts.map((post) => (
-                            <div key={post.id} className="bg-neutral-900 rounded-lg overflow-hidden">
+                    {loading ? (
+                        [...Array(5)].map((_, index) => (
+                            <PostSkeleton key={index} />
+                        ))
+                    ) : (
+                        filteredPosts.map((post) => (
+                            <div key={post.id} className="bg-neutral-900 p-4 rounded-lg mb-4 flex">
                                 <img 
                                     src={post.coverImage} 
                                     alt={`Capa de ${post.title}`} 
-                                    className="w-full h-48 object-cover"
+                                    className="w-32 h-32 object-cover rounded-lg mr-4"
                                 />
-                                <div className="p-4">
+                                <div className="flex-grow">
                                     <h2 className="text-xl font-bold text-white mb-2">{post.title}</h2>
-                                    <p className="text-gray-300 mb-2 line-clamp-2">{post.description}</p>
-                                    <p className="text-gray-400 text-sm mb-4">
-                                        {post.createdAt instanceof Date 
-                                        ? formatDate(post.createdAt)
-                                        : formatDate(new Date(post.createdAt))}
+                                    <p className="text-gray-300 mb-2">{post.description}</p>
+                                    <p className="text-gray-400 text-sm mb-2">
+                                        {formatDate(post.createdAt instanceof Date ? post.createdAt : new Date(post.createdAt))}
                                     </p>
-                                    <div className="flex justify-end">
-                                        <button
-                                            onClick={() => handleEdit(post)}
-                                            className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-600 transition duration-300"
-                                        >
-                                        <Edit size={18} />
-                                        </button>
-                                        <button
-                                            onClick={() => post.id && handleDelete(post.id)}
-                                            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition duration-300"
-                                        >
-                                        <Trash2 size={18} />
-                                        </button>
+                                    <div className="flex justify-end space-x-2">
+                                        <Button onClick={() => handleEdit(post)} className="flex gap-2">
+                                            <Edit size={18} />
+                                            Editar
+                                        </Button>
+                                        <Button onClick={() => post.id && handleDelete(post.id)} variant="destructive" className="flex gap-2">
+                                            <Trash2 size={18} />
+                                            Deletar
+                                        </Button>
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        ))
+                    )}
                     <Dialog open={!!editingPost} onOpenChange={() => setEditingPost(null)}>
                         <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto bg-neutral-950 border-none">
                         <DialogHeader>
