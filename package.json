@@ -13,7 +13,7 @@
   },
   "build": {
     "appId": "com.blog.app",
-    "productName": "Gerenciador do Blog",
+    "productName": "Painel do Blog",
     "files": [
       "dist/**/*",
       "dist-electron/**/*"
