@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from "@/components/NavigationBar";
 import { addPost } from '@/firebase/firestore';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 function AddPost() {
     const [title, setTitle] = useState('');
@@ -9,6 +13,23 @@ function AddPost() {
     const [description, setDescription] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const navigate = useNavigate();
+
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, false] }],
+            ['bold', 'italic', 'underline','strike', 'blockquote'],
+            [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+            ['link', 'image'],
+            ['clean']
+        ],
+    };
+
+    const formats = [
+        'header',
+        'bold', 'italic', 'underline', 'strike', 'blockquote',
+        'list', 'bullet', 'indent',
+        'link', 'image'
+    ];
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,15 +71,18 @@ function AddPost() {
                             placeholder="URL da imagem de capa"
                             className="w-full p-2 rounded bg-gray-800 text-white"
                         />
-                        <textarea
+                        <ReactQuill 
+                            theme="snow"
                             value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            placeholder="Conteúdo"
-                            className="w-full p-2 rounded bg-gray-800 text-white h-40"
+                            onChange={setContent}
+                            modules={modules}
+                            formats={formats}
+                            className="bg-gray-800 text-white"
                         />
-                        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+                        <Button type="submit" className="px-4 py-2 bg-violet-500 hover:bg-violet-600 text-white rounded gap-2">
+                            <Plus />
                             Adicionar Post
-                        </button>
+                        </Button>
                     </form>
                 </main>
             </div>

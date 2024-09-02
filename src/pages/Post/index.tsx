@@ -29,7 +29,7 @@ function PostPage() {
                     <img src={post.coverImage} alt={post.title} className="w-full h-64 object-cover rounded-lg mb-8" />
                     <h1 className="text-4xl text-white font-bold mb-4">{post.title}</h1>
                     <p className="text-gray-300 mb-8">{post.description}</p>
-                    <div className="text-white">{post.content}</div>
+                    <div className="text-white post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
                 </main>
             </div>
         </>
