@@ -1,7 +1,7 @@
 {
   "name": "blog-manager",
   "private": true,
-  "author": "kristyancarvalho",
+  "author": "Kristyan Carvalho",
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "version": "1.0.0",
   "type": "module",
@@ -12,7 +12,7 @@
     "preview": "vite preview"
   },
   "build": {
-    "appId": "com.seu.app",
+    "appId": "com.blog.app",
     "productName": "Blog Manager",
     "files": [
       "dist/**/*",
