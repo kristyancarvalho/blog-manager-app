@@ -29,7 +29,14 @@ export const deletePost = async (id: string): Promise<void> => {
 
 export const getPosts = async (): Promise<Post[]> => {
   const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Post));
+  return querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return { 
+      id: doc.id, 
+      ...data,
+      createdAt: data.createdAt.toDate()
+    } as Post;
+  });
 };
 
 export const getPost = async (id: string): Promise<Post | null> => {

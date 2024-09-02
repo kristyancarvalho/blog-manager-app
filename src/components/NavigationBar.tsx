@@ -1,7 +1,7 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from "./Logo";
-import { Home, FileText, PenTool } from 'lucide-react';
+import { Home, FileText, PenTool, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 type AccentColor = 'blue' | 'green' | 'red';
@@ -28,6 +28,7 @@ const colorMap: Record<AccentColor, string> = {
 function SidebarNavigation() {
     const location = useLocation();
     const navRef = useRef<HTMLDivElement>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { activeIndex, activeItem } = useMemo(() => {
         const index = navigationArray.findIndex(item => {
@@ -39,52 +40,72 @@ function SidebarNavigation() {
         return { activeIndex: index, activeItem: navigationArray[index] };
     }, [location.pathname]);
 
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
 
     return (
-        <div className="fixed top-0 left-0 bottom-0 w-1/5 h-screen z-50 py-24">
-            <div className="w-full flex items-center justify-center">
-                <Logo />
+        <>
+            <button 
+                onClick={toggleMenu} 
+                className="lg:hidden fixed top-4 left-4 z-50 bg-violet-500 text-white p-2 rounded-full"
+            >
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+
+            <div className={`fixed top-0 left-0 bottom-0 w-4/5 lg:w-1/5 h-screen z-40 py-24 bg-neutral-950 transition-transform duration-300 ease-in-out transform 
+                ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
+                lg:translate-x-0`}>
+                <div className="w-full flex items-center justify-center">
+                    <Logo />
+                </div>
+                <nav className="relative mt-24 mx-8 flex flex-col" ref={navRef}>
+                    <motion.div
+                        layoutId="active-background"
+                        className="absolute left-0 right-0 h-14 rounded-lg"
+                        style={{ 
+                            opacity: 0.2,
+                            backgroundColor: colorMap[activeItem?.accentColor || 'blue'],
+                            top: `${activeIndex * 56}px`
+                        }}
+                        transition={{ 
+                            type: "spring", 
+                            stiffness: 800, 
+                            damping: 30,
+                            duration: 0.3,
+                        }}
+                    />
+                    {navigationArray.map(({ title, link, icon: Icon, accentColor }) => {
+                        const isActive = link === '/' 
+                            ? (location.pathname === '/' || location.pathname.startsWith('/post/'))
+                            : location.pathname === link;
+                        
+                        return (
+                            <NavLink
+                                key={link}
+                                to={link}
+                                className={`
+                                    relative z-10 flex items-center px-16 py-4 transition duration-300 ease-in-out
+                                    ${isActive 
+                                        ? `text-${accentColor}-500 font-extrabold` 
+                                        : 'text-gray-200/80 hover:text-white font-medium'}
+                                `}
+                                onClick={() => setIsMenuOpen(false)}
+                            >
+                                <Icon className="mr-4" size={20} />
+                                <code>{title}</code>
+                            </NavLink>
+                        );
+                    })}
+                </nav>
             </div>
-            <nav className="relative mt-24 mx-8 flex flex-col" ref={navRef}>
-                <motion.div
-                    layoutId="active-background"
-                    className="absolute left-0 right-0 h-14 rounded-lg"
-                    style={{ 
-                        opacity: 0.2,
-                        backgroundColor: colorMap[activeItem?.accentColor || 'blue'],
-                        top: `${activeIndex * 56}px`
-                    }}
-                    transition={{ 
-                        type: "spring", 
-                        stiffness: 300, 
-                        damping: 30,
-                        duration: 0.3,
-                    }}
-                />
-                {navigationArray.map(({ title, link, icon: Icon, accentColor }) => {
-                    // Modificar esta parte para considerar a página de post individual
-                    const isActive = link === '/' 
-                        ? (location.pathname === '/' || location.pathname.startsWith('/post/'))
-                        : location.pathname === link;
-                    
-                    return (
-                        <NavLink
-                            key={link}
-                            to={link}
-                            className={`
-                                relative z-10 flex items-center px-16 py-4 transition duration-300 ease-in-out
-                                ${isActive 
-                                    ? `text-${accentColor}-500 font-extrabold` 
-                                    : 'text-gray-200/80 hover:text-white font-medium'}
-                            `}
-                        >
-                            <Icon className="mr-4" size={20} />
-                            <code>{title}</code>
-                        </NavLink>
-                    );
-                })}
-            </nav>
-        </div>
+            {isMenuOpen && (
+                <div 
+                    className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+                    onClick={() => setIsMenuOpen(false)}
+                ></div>
+            )}
+        </>
     );
 }
 

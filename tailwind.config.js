@@ -53,7 +53,7 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
   safelist: [
     "bg-blue-500/20",
     "text-blue-500",
