@@ -39,7 +39,6 @@ function SidebarNavigation() {
         });
         return { activeIndex: index, activeItem: navigationArray[index] };
     }, [location.pathname]);
-
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
