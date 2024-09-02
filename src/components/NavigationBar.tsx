@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from "./Logo";
 import { Home, FileText, PenTool } from 'lucide-react';
@@ -29,8 +29,16 @@ function SidebarNavigation() {
     const location = useLocation();
     const navRef = useRef<HTMLDivElement>(null);
 
-    const activeIndex = navigationArray.findIndex(item => item.link === location.pathname);
-    const activeItem = navigationArray[activeIndex];
+    const { activeIndex, activeItem } = useMemo(() => {
+        const index = navigationArray.findIndex(item => {
+            if (item.link === '/') {
+                return location.pathname === '/' || location.pathname.startsWith('/post/');
+            }
+            return item.link === location.pathname;
+        });
+        return { activeIndex: index, activeItem: navigationArray[index] };
+    }, [location.pathname]);
+
 
     return (
         <div className="fixed top-0 left-0 bottom-0 w-1/5 h-screen z-50 py-24">
@@ -48,12 +56,17 @@ function SidebarNavigation() {
                     }}
                     transition={{ 
                         type: "spring", 
-                        stiffness: 500, 
+                        stiffness: 300, 
                         damping: 30,
+                        duration: 0.3,
                     }}
                 />
                 {navigationArray.map(({ title, link, icon: Icon, accentColor }) => {
-                    const isActive = location.pathname === link;
+                    // Modificar esta parte para considerar a página de post individual
+                    const isActive = link === '/' 
+                        ? (location.pathname === '/' || location.pathname.startsWith('/post/'))
+                        : location.pathname === link;
+                    
                     return (
                         <NavLink
                             key={link}
