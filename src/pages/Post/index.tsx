@@ -1,9 +1,9 @@
-// src/pages/Post/index.tsx
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import NavigationBar from "@/components/NavigationBar";
 import { getPost, Post } from '@/firebase/firestore';
 import { Skeleton } from '@/components/Skeleton';
+import Breadcrumbs from '../../components/Breadcrumb';
 
 function PostPage() {
     const [post, setPost] = useState<Post | null>(null);
@@ -31,11 +31,17 @@ function PostPage() {
         </>
     );
 
+    const breadcrumbItems = [
+        { label: 'Posts', href: '/' },
+        { label: post?.title || 'Carregando...', href: '#' },
+    ];
+
     return (
         <>
             <NavigationBar />
             <div className="absolute top-0 bottom-0 right-0 min-h-screen w-4/5 flex items-center justify-center p-8">
                 <main className="w-full h-full bg-black rounded-3xl shadow-black/60 shadow-900 shadow-2xl p-16 overflow-auto">
+                    <Breadcrumbs items={breadcrumbItems} />
                     {loading ? (
                         <PostSkeleton />
                     ) : post ? (
@@ -46,7 +52,7 @@ function PostPage() {
                             <div className="text-white post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
                         </>
                     ) : (
-                        <div>Post not found</div>
+                        <div>Post não encontrado.</div>
                     )}
                 </main>
             </div>
