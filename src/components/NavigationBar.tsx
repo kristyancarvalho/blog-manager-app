@@ -68,10 +68,10 @@ function SidebarNavigation() {
                             top: `${activeIndex * 56}px`
                         }}
                         transition={{ 
-                            type: "spring", 
-                            stiffness: 800, 
+                            type: "just", 
+                            stiffness: 1000, 
                             damping: 30,
-                            duration: 0.3,
+                            duration: 0.2,
                         }}
                     />
                     {navigationArray.map(({ title, link, icon: Icon, accentColor }) => {
