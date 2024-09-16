@@ -222,6 +222,7 @@ function AddPost() {
                                     </div>
                                 </div>
                             ))}
+                            {drafts.length === 0 && <p className="text-neutral-400">Nenhum rascunho salvo.</p>}
                         </div>
                     </div>
                 </main>
