@@ -25,9 +25,11 @@ function ManagePost() {
         fetchPosts();
     }, []);
 
-    const filteredPosts = posts.filter(post =>
-        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        post.description.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredPosts = posts
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+        .filter(post =>
+            post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            post.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const formatDate = (date: Date) => {
