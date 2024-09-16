@@ -39,6 +39,7 @@ function SidebarNavigation() {
         });
         return { activeIndex: index, activeItem: navigationArray[index] };
     }, [location.pathname]);
+
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
@@ -56,7 +57,7 @@ function SidebarNavigation() {
                 ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
                 lg:translate-x-0`}>
                 <div className="w-full flex items-center justify-center">
-                    <Logo />
+                    <Logo accentColor={activeItem?.accentColor || 'blue'} />
                 </div>
                 <nav className="relative mt-24 mx-8 flex flex-col" ref={navRef}>
                     <motion.div
