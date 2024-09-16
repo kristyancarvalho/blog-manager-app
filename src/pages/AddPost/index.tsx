@@ -105,10 +105,10 @@ function AddPost() {
     return (
         <>
             <NavigationBar />
-            <div className="absolute top-0 bottom-0 right-0 min-h-screen w-4/5 flex items-center justify-center p-8">
-                <main className="w-full bg-black rounded-3xl shadow-black/60 shadow-900 shadow-2xl p-16">
+            <div className="absolute top-0 bottom-0 right-0 min-h-screen w-full sm:w-4/5 md:w-5/5 lg:w-4/5 flex items-center justify-center p-8">
+                <main className="w-full h-full bg-black rounded-3xl shadow-black/60 shadow-900 shadow-2xl p-16 overflow-auto">
                     <code className="text-4xl text-neutral-200 text-extrabold mb-8 block">Postar</code>
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
                             <label htmlFor="title" className="block text-sm font-medium text-white/80 mb-2">Título do Post <strong className='text-red-500/70'>*</strong></label>
                             <Input
@@ -117,7 +117,7 @@ function AddPost() {
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 placeholder="Título"
-                                className="w-full p-6 rounded bg-neutral-900 border-none text-white"
+                                className="w-full p-4 rounded bg-neutral-900 border-none text-white"
                                 required
                             />
                         </div>
@@ -129,7 +129,7 @@ function AddPost() {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="Descrição breve"
-                                className="w-full p-6 pb-16 rounded bg-neutral-900 border-none text-white"
+                                className="w-full p-4 rounded bg-neutral-900 border-none text-white"
                                 required
                             />
                         </div>
@@ -141,7 +141,7 @@ function AddPost() {
                                 value={coverImage}
                                 onChange={(e) => setCoverImage(e.target.value)}
                                 placeholder="URL da imagem de capa"
-                                className="w-full p-6 rounded bg-neutral-900 border-none text-white"
+                                className="w-full p-4 rounded bg-neutral-900 border-none text-white"
                                 required
                             />
                         </div>
@@ -185,19 +185,19 @@ function AddPost() {
                             </Button>
                         </div>
                     </form>
-                    <div className="mt-8 flex flex-col space-y-4 mb-4">
+                    <div className="mt-8 mb-4">
                         <code>
-                            <h2 className="text-2xl font-bold text-neutral-200">Rascunhos Salvos</h2>
+                            <h2 className="text-2xl font-bold text-neutral-200 mb-4">Rascunhos Salvos</h2>
                         </code>
                         <div className="max-h-60 overflow-y-auto pr-2">
                             {drafts.map((draft) => (
-                                <div key={draft.id} className="bg-neutral-900 p-2 rounded-lg mb-2 flex justify-between items-center">
+                                <div key={draft.id} className="bg-neutral-900 p-4 rounded-lg mb-4 flex justify-between items-center">
                                     <img 
                                         src={draft.coverImage} 
                                         alt={draft.title} 
-                                        className='w-32 h-16 rounded mr-4'
+                                        className='w-32 h-16 object-cover rounded mr-4'
                                     />
-                                    <div>
+                                    <div className="flex-grow">
                                         <h3 className="text-lg font-semibold text-neutral-200">{draft.title}</h3>
                                         <p className="text-sm text-neutral-400">Salvo em: {formatDate(new Date(draft.lastSaved))}</p>
                                     </div>
