@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/Skeleton';
 
+const CACHE_KEY = 'cachedManagePosts';
+const CACHE_EXPIRATION = 1000 * 60 * 5;
+
 function ManagePost() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -18,10 +21,34 @@ function ManagePost() {
     useEffect(() => {
         const fetchPosts = async () => {
             setLoading(true);
-            const fetchedPosts = await getPosts();
-            setPosts(fetchedPosts);
-            setLoading(false);
+            try {
+                const cachedData = localStorage.getItem(CACHE_KEY);
+                if (cachedData) {
+                    const { posts: cachedPosts, timestamp } = JSON.parse(cachedData);
+                    if (Date.now() - timestamp < CACHE_EXPIRATION) {
+                        setPosts(cachedPosts.map((post: Post) => ({
+                            ...post,
+                            createdAt: new Date(post.createdAt)
+                        })));
+                        setLoading(false);
+                        return;
+                    }
+                }
+
+                const fetchedPosts = await getPosts();
+                setPosts(fetchedPosts);
+
+                localStorage.setItem(CACHE_KEY, JSON.stringify({
+                    posts: fetchedPosts,
+                    timestamp: Date.now()
+                }));
+            } catch (err) {
+                console.error("Error fetching posts:", err);
+            } finally {
+                setLoading(false);
+            }
         };
+
         fetchPosts();
     }, []);
 
@@ -55,6 +82,11 @@ function ManagePost() {
             setEditingPost(null);
             const updatedPosts = await getPosts();
             setPosts(updatedPosts);
+            
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                posts: updatedPosts,
+                timestamp: Date.now()
+            }));
         }
     };
 
@@ -63,6 +95,11 @@ function ManagePost() {
             await deletePost(id);
             const updatedPosts = await getPosts();
             setPosts(updatedPosts);
+            
+            localStorage.setItem(CACHE_KEY, JSON.stringify({
+                posts: updatedPosts,
+                timestamp: Date.now()
+            }));
         }
     };
 

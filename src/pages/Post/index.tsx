@@ -5,6 +5,9 @@ import { getPost, Post } from '@/firebase/firestore';
 import { Skeleton } from '@/components/Skeleton';
 import Breadcrumbs from '../../components/Breadcrumb';
 
+const CACHE_KEY_PREFIX = 'cachedPost_';
+const CACHE_EXPIRATION = 1000 * 60 * 60;
+
 function PostPage() {
     const [post, setPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
@@ -14,9 +17,35 @@ function PostPage() {
         const fetchPost = async () => {
             if (id) {
                 setLoading(true);
-                const fetchedPost = await getPost(id);
-                setPost(fetchedPost);
-                setLoading(false);
+                try {
+                    const cacheKey = `${CACHE_KEY_PREFIX}${id}`;
+                    const cachedData = localStorage.getItem(cacheKey);
+                    
+                    if (cachedData) {
+                        const { post: cachedPost, timestamp } = JSON.parse(cachedData);
+                        if (Date.now() - timestamp < CACHE_EXPIRATION) {
+                            setPost({
+                                ...cachedPost,
+                                createdAt: new Date(cachedPost.createdAt)
+                            });
+                            setLoading(false);
+                            return;
+                        }
+                    }
+
+                    const fetchedPost = await getPost(id);
+                    setPost(fetchedPost);
+
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        post: fetchedPost,
+                        timestamp: Date.now()
+                    }));
+                } catch (err) {
+                    console.error("Error fetching post:", err);
+                    setPost(null);
+                } finally {
+                    setLoading(false);
+                }
             }
         };
         fetchPost();
