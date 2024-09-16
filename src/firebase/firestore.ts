@@ -2,12 +2,13 @@ import { db } from './config';
 import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc } from 'firebase/firestore';
 
 export interface Post {
-  id?: string;
+  id: string;
   title: string;
   content: string;
   description: string;
   coverImage: string;
   createdAt: Date;
+  isDraft: boolean;
 }
 
 const COLLECTION_NAME = 'posts';
