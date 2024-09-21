@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-type AccentColor = 'blue' | 'green' | 'red';
+type AccentColor = 'blue' | 'green' | 'violet' | 'red';
 
 interface LogoProps {
     accentColor: AccentColor;
@@ -9,7 +9,8 @@ interface LogoProps {
 const colorMap: Record<AccentColor, string> = {
     blue: 'text-blue-500',
     green: 'text-green-500',
-    red: 'text-red-500'
+    red: 'text-red-500',
+    violet: 'text-violet-500'
 };
 
 export function Logo({ accentColor }: LogoProps) {

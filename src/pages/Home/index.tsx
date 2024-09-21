@@ -5,9 +5,6 @@ import { getPosts, Post } from '@/firebase/firestore';
 import SearchBar from '@/components/SearchBar';
 import { Skeleton } from '@/components/Skeleton';
 
-const CACHE_KEY = 'cachedPosts';
-const CACHE_EXPIRATION = 1000 * 60 * 60;
-
 function HomePage() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
@@ -17,27 +14,9 @@ function HomePage() {
         const fetchPosts = async () => {
             setLoading(true);
             try {
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                if (cachedData) {
-                    const { posts: cachedPosts, timestamp } = JSON.parse(cachedData);
-                    if (Date.now() - timestamp < CACHE_EXPIRATION) {
-                        setPosts(cachedPosts.map((post: Post) => ({
-                            ...post,
-                            createdAt: new Date(post.createdAt)
-                        })));
-                        setLoading(false);
-                        return;
-                    }
-                }
-
                 const fetchedPosts = await getPosts();
                 const sortedPosts = fetchedPosts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
                 setPosts(sortedPosts);
-
-                localStorage.setItem(CACHE_KEY, JSON.stringify({
-                    posts: sortedPosts,
-                    timestamp: Date.now()
-                }));
             } catch (err) {
                 console.error("Error fetching posts:", err);
             } finally {

@@ -1,10 +1,10 @@
 import { useRef, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Logo } from "./Logo";
-import { Home, FileText, PenTool, Menu, X } from 'lucide-react';
+import { Home, FileText, PenTool, Menu, X, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AccentColor = 'blue' | 'green' | 'red';
+type AccentColor = 'blue' | 'green' | 'violet' | 'red';
 
 interface NavItem {
     title: string;
@@ -16,12 +16,14 @@ interface NavItem {
 const navigationArray: NavItem[] = [
     { title: 'Posts', link: '/', icon: Home, accentColor: 'blue' },
     { title: 'Gerenciar Posts', link: '/manage-posts', icon: FileText, accentColor: 'green' },
-    { title: 'Postar', link: '/add-posts', icon: PenTool, accentColor: 'red' }
+    { title: 'Postar', link: '/add-posts', icon: PenTool, accentColor: 'violet' },
+    { title: 'Lixeira', link: '/trash', icon: Trash2, accentColor: 'red' }
 ];
 
 const colorMap: Record<AccentColor, string> = {
     blue: 'rgb(59, 130, 246)',
     green: 'rgb(34, 197, 94)',
+    violet: 'rgb(139, 92, 246)',
     red: 'rgb(239, 68, 68)'
 };
 

@@ -3,6 +3,7 @@ import HomePage from "./pages/Home";
 import ManagePost from "./pages/ManagePost";
 import AddPost from "./pages/AddPost";
 import PostPage from "./pages/Post";
+import TrashPage from "./pages/Trash";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/manage-posts" element={<ManagePost />} />
           <Route path="/add-posts" element={<AddPost />} />
           <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/trash" element={<TrashPage />} />
         </Routes>
       </Router>
   );

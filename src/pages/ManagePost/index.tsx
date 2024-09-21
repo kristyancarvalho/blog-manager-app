@@ -9,9 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/Skeleton';
 
-const CACHE_KEY = 'cachedManagePosts';
-const CACHE_EXPIRATION = 1000 * 60 * 5;
-
 function ManagePost() {
     const [posts, setPosts] = useState<Post[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -22,26 +19,8 @@ function ManagePost() {
         const fetchPosts = async () => {
             setLoading(true);
             try {
-                const cachedData = localStorage.getItem(CACHE_KEY);
-                if (cachedData) {
-                    const { posts: cachedPosts, timestamp } = JSON.parse(cachedData);
-                    if (Date.now() - timestamp < CACHE_EXPIRATION) {
-                        setPosts(cachedPosts.map((post: Post) => ({
-                            ...post,
-                            createdAt: new Date(post.createdAt)
-                        })));
-                        setLoading(false);
-                        return;
-                    }
-                }
-
                 const fetchedPosts = await getPosts();
                 setPosts(fetchedPosts);
-
-                localStorage.setItem(CACHE_KEY, JSON.stringify({
-                    posts: fetchedPosts,
-                    timestamp: Date.now()
-                }));
             } catch (err) {
                 console.error("Error fetching posts:", err);
             } finally {
@@ -82,27 +61,28 @@ function ManagePost() {
             setEditingPost(null);
             const updatedPosts = await getPosts();
             setPosts(updatedPosts);
-            
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                posts: updatedPosts,
-                timestamp: Date.now()
-            }));
         }
     };
 
-    const handleDelete = async (id: string | undefined) => {
-        if (id && window.confirm('Tem certeza que deseja deletar este post?')) {
-            await deletePost(id);
-            const updatedPosts = await getPosts();
-            setPosts(updatedPosts);
-            
-            localStorage.setItem(CACHE_KEY, JSON.stringify({
-                posts: updatedPosts,
-                timestamp: Date.now()
-            }));
-        }
-    };
-
+  const handleDelete = async (id: string | undefined) => {
+      if (id && window.confirm('Tem certeza que deseja deletar este post?')) {
+          const postToDelete = posts.find(post => post.id === id);
+          if (postToDelete) {
+              const TRASH_STORAGE_KEY = 'trashedPosts';
+              const storedPosts = localStorage.getItem(TRASH_STORAGE_KEY);
+              const trashedPosts = storedPosts ? JSON.parse(storedPosts) : [];
+              trashedPosts.push({
+                  ...postToDelete,
+                  deletedAt: Date.now()
+              });
+              localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify(trashedPosts));
+  
+              await deletePost(id);
+              const updatedPosts = await getPosts();
+              setPosts(updatedPosts);
+          }
+      }
+  };
     const PostSkeleton = () => (
         <div className="bg-neutral-900 p-4 rounded-lg mb-4 flex">
             <Skeleton className="w-32 h-32 mr-4" />
