@@ -2,7 +2,8 @@
 
 Electron application to manage the available posts in https://kristyancarvalho.vercel.app/posts.
 
-![App Demo](./working.gif)
+![Cover](.github/cover.png)
+![App Demo](.github/working.gif)
 
 ## Features
 
