@@ -14,6 +14,7 @@ function ManagePost() {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingPost, setEditingPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
+    const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -64,25 +65,33 @@ function ManagePost() {
         }
     };
 
-  const handleDelete = async (id: string | undefined) => {
-      if (id && window.confirm('Tem certeza que deseja deletar este post?')) {
-          const postToDelete = posts.find(post => post.id === id);
-          if (postToDelete) {
-              const TRASH_STORAGE_KEY = 'trashedPosts';
-              const storedPosts = localStorage.getItem(TRASH_STORAGE_KEY);
-              const trashedPosts = storedPosts ? JSON.parse(storedPosts) : [];
-              trashedPosts.push({
-                  ...postToDelete,
-                  deletedAt: Date.now()
-              });
-              localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify(trashedPosts));
-  
-              await deletePost(id);
-              const updatedPosts = await getPosts();
-              setPosts(updatedPosts);
-          }
-      }
-  };
+    const handleDelete = async (id: string | undefined) => {
+        if (id) {
+            setConfirmDelete(id);
+        }
+    };
+
+    const confirmDeletePost = async () => {
+        if (confirmDelete) {
+            const postToDelete = posts.find(post => post.id === confirmDelete);
+            if (postToDelete) {
+                const TRASH_STORAGE_KEY = 'trashedPosts';
+                const storedPosts = localStorage.getItem(TRASH_STORAGE_KEY);
+                const trashedPosts = storedPosts ? JSON.parse(storedPosts) : [];
+                trashedPosts.push({
+                    ...postToDelete,
+                    deletedAt: Date.now()
+                });
+                localStorage.setItem(TRASH_STORAGE_KEY, JSON.stringify(trashedPosts));
+
+                await deletePost(confirmDelete);
+                const updatedPosts = await getPosts();
+                setPosts(updatedPosts);
+            }
+            setConfirmDelete(null);
+        }
+    };
+
     const PostSkeleton = () => (
         <div className="bg-neutral-900 p-4 rounded-lg mb-4 flex">
             <Skeleton className="w-32 h-32 mr-4" />
@@ -97,7 +106,6 @@ function ManagePost() {
             </div>
         </div>
     );
-
     return (
         <>
             <NavigationBar />
@@ -208,6 +216,24 @@ function ManagePost() {
                                     </DialogFooter>
                                 </div>
                             )}
+                        </DialogContent>
+                    </Dialog>
+                    <Dialog open={!!confirmDelete} onOpenChange={() => setConfirmDelete(null)}>
+                        <DialogContent className="sm:max-w-[425px] bg-neutral-950 border-none">
+                            <DialogHeader>
+                                <DialogTitle className="text-2xl text-neutral-200"><code>Confirmar Exclusão</code></DialogTitle>
+                            </DialogHeader>
+                            <p className="text-neutral-300">Tem certeza que deseja deletar este post? O post será movido para a lixeira.</p>
+                            <DialogFooter>
+                                <Button variant="outline" onClick={() => setConfirmDelete(null)} className="flex gap-2 text-white hover:text-white border-none bg-neutral-700 hover:bg-neutral-600">
+                                    <X size={18} />
+                                    Cancelar
+                                </Button>
+                                <Button onClick={confirmDeletePost} variant="destructive" className="flex gap-2">
+                                    <Trash2 size={18} />
+                                    Deletar
+                                </Button>
+                            </DialogFooter>
                         </DialogContent>
                     </Dialog>
                 </main>
