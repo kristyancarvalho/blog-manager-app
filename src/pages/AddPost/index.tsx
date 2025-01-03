@@ -7,6 +7,7 @@ import { Plus, Eye, Save, Trash2, Upload, } from 'lucide-react';
 import NavigationBar from "@/components/NavigationBar";
 import RichTextEditor from '@/components/RichTextEditor';
 import { addPost } from '@/firebase/firestore';
+import { useToast } from "@/hooks/use-toast";
 
 interface DraftPost {
     id: string;
@@ -28,6 +29,7 @@ function AddPost() {
     const [isFormValid, setIsFormValid] = useState(false);
     const [drafts, setDrafts] = useState<DraftPost[]>([]);
     const navigate = useNavigate();
+    const { toast } = useToast();
 
     useEffect(() => {
         const savedDrafts = localStorage.getItem(DRAFTS_STORAGE_KEY);
@@ -48,17 +50,32 @@ function AddPost() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isFormValid) {
-            await addPost({ 
-                title, 
-                content, 
-                description,
-                coverImage,
-                createdAt: new Date(),
-                isDraft: false
-            });
-            navigate('/');
+            try {
+                await addPost({ 
+                    title, 
+                    content, 
+                    description,
+                    coverImage,
+                    createdAt: new Date(),
+                    isDraft: false
+                });
+                toast({
+                    title: "Post adicionado com sucesso",
+                    description: "Seu post foi publicado.",
+                    variant: "success"
+                });
+                navigate('/');
+            } catch (error) {
+                console.error("Error adding post:", error);
+                toast({
+                    title: "Erro ao adicionar post",
+                    description: "Ocorreu um erro ao tentar publicar o post. Por favor, tente novamente.",
+                    variant: "destructive",
+                });
+            }
         }
     };
+
 
     const openReviewModal = () => {
         setIsReviewModalOpen(true);
@@ -76,7 +93,11 @@ function AddPost() {
         const updatedDrafts = [...drafts, newDraft];
         setDrafts(updatedDrafts);
         localStorage.setItem(DRAFTS_STORAGE_KEY, JSON.stringify(updatedDrafts));
-        alert('Rascunho salvo com sucesso!');
+        toast({
+            title: "Rascunho salvo",
+            description: "Seu rascunho foi salvo com sucesso.",
+            variant: "success"
+        });
     };
 
     const loadDraft = (draft: DraftPost) => {
@@ -90,6 +111,11 @@ function AddPost() {
         const updatedDrafts = drafts.filter(draft => draft.id !== id);
         setDrafts(updatedDrafts);
         localStorage.setItem(DRAFTS_STORAGE_KEY, JSON.stringify(updatedDrafts));
+        toast({
+            title: "Rascunho excluído",
+            description: "O rascunho foi removido com sucesso.",
+            variant: "success"
+        });
     };
 
     const formatDate = (date: Date) => {
@@ -100,8 +126,6 @@ function AddPost() {
         }).format(date);
     };
     
-
-
     return (
         <>
             <NavigationBar />

@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/Skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 function ManagePost() {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -15,6 +16,7 @@ function ManagePost() {
     const [editingPost, setEditingPost] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+    const { toast } = useToast();
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -62,6 +64,11 @@ function ManagePost() {
             setEditingPost(null);
             const updatedPosts = await getPosts();
             setPosts(updatedPosts);
+            toast({
+                title: "Post atualizado com sucesso",
+                description: "O post foi atualizado.",
+                variant: "success"
+            });
         }
     };
 
@@ -89,6 +96,11 @@ function ManagePost() {
                 setPosts(updatedPosts);
             }
             setConfirmDelete(null);
+            toast({
+                title: "Post deletado com sucesso",
+                description: "O post foi movido para a lixeira.",
+                variant: "success"
+            });
         }
     };
 

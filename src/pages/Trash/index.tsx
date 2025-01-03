@@ -5,7 +5,6 @@ import { Trash2, RefreshCw, X } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 
 const TRASH_STORAGE_KEY = 'trashedPosts';
 const RETENTION_PERIOD = 7 * 24 * 60 * 60 * 1000;
@@ -93,6 +92,7 @@ function TrashPage() {
         toast({
             title: "Todos os posts foram excluídos permanentemente",
             description: "A lixeira foi esvaziada.",
+            variant: "success"
         });
     };
 
@@ -177,7 +177,6 @@ function TrashPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <Toaster />
         </>
     )
 }

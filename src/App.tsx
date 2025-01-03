@@ -4,18 +4,23 @@ import ManagePost from "./pages/ManagePost";
 import AddPost from "./pages/AddPost";
 import PostPage from "./pages/Post";
 import TrashPage from "./pages/Trash";
+import { Toaster } from "./components/ui/toaster";
+
 
 function App() {
   return (
-    <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/manage-posts" element={<ManagePost />} />
-          <Route path="/add-posts" element={<AddPost />} />
-          <Route path="/post/:id" element={<PostPage />} />
-          <Route path="/trash" element={<TrashPage />} />
-        </Routes>
-      </Router>
+    <>
+      <Router>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/manage-posts" element={<ManagePost />} />
+            <Route path="/add-posts" element={<AddPost />} />
+            <Route path="/post/:id" element={<PostPage />} />
+            <Route path="/trash" element={<TrashPage />} />
+          </Routes>
+        </Router>
+        <Toaster />
+      </>
   );
 }
 
