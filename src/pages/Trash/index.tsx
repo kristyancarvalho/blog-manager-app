@@ -45,6 +45,7 @@ function TrashPage() {
         toast({
             title: "Post excluído permanentemente",
             description: "O post foi removido da lixeira.",
+            variant: "success"
         });
     };
 
